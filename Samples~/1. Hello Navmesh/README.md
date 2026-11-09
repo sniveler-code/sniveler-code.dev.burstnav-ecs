@@ -23,7 +23,7 @@ requests the opposite corner again.
 
 ## How to run
 
-1. Add `com.burstnav.free` through Window > Package Manager > Add package from
+1. Add `sniveler-code.dev.burstnav-ecs` through Window > Package Manager > Add package from
    disk and select the package's `package.json`.
 2. Open Window > Package Manager, select BurstNav.Free, open the Samples tab and
    import Hello Navmesh.

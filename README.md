@@ -1,6 +1,6 @@
 # BurstNav Free
 
-`com.burstnav.free` is the static navigation package for Unity DOTS. It resolves
+`sniveler-code.dev.burstnav-ecs` is the static navigation package for Unity DOTS. It resolves
 paths with flat A* over a baked polygon graph and moves agents with a kinematic
 funnel. The steady-state pipeline allocates nothing: the graph is a blob asset,
 the search reuses one fixed scratchpad, and the steering jobs write chunk arrays
@@ -41,7 +41,7 @@ BnAgentPathRequest
 
 ## Samples
 
-`com.burstnav.free` owns its samples under `Samples~`. Open the Package
+`sniveler-code.dev.burstnav-ecs` owns its samples under `Samples~`. Open the Package
 Manager, select **BurstNav Free**, open the **Samples** tab and import Hello
 Navmesh or Funnel Steering. The generated copy lands under
 `Assets/Samples/BurstNav Free/<version>/`.

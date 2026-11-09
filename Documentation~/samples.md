@@ -1,6 +1,6 @@
 # BurstNav Free samples
 
-`com.burstnav.free` ships its own sample set under `Samples~` in the package
+`sniveler-code.dev.burstnav-ecs` ships its own sample set under `Samples~` in the package
 root. The folder is hidden from the asset database until you import a sample
 through the Package Manager Samples tab. Every sample is
 self-contained: one entry scene, a `Scripts` folder with its own assembly
@@ -55,7 +55,7 @@ data types and spawns the agents, so the scene needs no bake step.
 
 | Symptom | Check |
 | --- | --- |
-| The sample is missing from the Samples tab | Confirm that `com.burstnav.free` is installed at version 1.1.0 and that `package.json` lists the sample under `samples`. Refresh the Package Manager window. |
+| The sample is missing from the Samples tab | Confirm that `sniveler-code.dev.burstnav-ecs` is installed at version 1.1.0 and that `package.json` lists the sample under `samples`. Refresh the Package Manager window. |
 | Imported scripts report missing references | Keep the generated `Scripts` folder and its `.asmdef` intact. The assembly references `BurstNav.Free` plus the DOTS assemblies; a manual move can break the reference. |
 | The scene opens with missing scripts | Remove the old `Assets/Samples` copy, reimport the sample from the Samples tab and open the scene again. Two copies with different GUIDs can shadow each other. |
 | Agents stay still in Play mode | Enter Play mode, check the Console for job or Burst errors, and confirm that the default world is running. The Free samples create their graph and agents at Play start and need an active DOTS world. |
@@ -65,7 +65,7 @@ data types and spawns the agents, so the scene needs no bake step.
 Run the `BurstNav.Free.Tests.EditMode` and `BurstNav.Free.Tests.PlayMode`
 assemblies from **Window > General > Test Runner** to exercise the coverage the
 samples rely on. Like any package test set, they are compiled only when
-`com.burstnav.free` is listed under `testables` in `Packages/manifest.json`.
+`sniveler-code.dev.burstnav-ecs` is listed under `testables` in `Packages/manifest.json`.
 
 ## Related pages
 

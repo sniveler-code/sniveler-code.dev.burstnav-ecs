@@ -19,7 +19,7 @@ Add the pinned DOTS packages to Packages/manifest.json:
 }
 ```
 
-Add `com.burstnav.free` with **Window > Package Manager > Add package from
+Add `sniveler-code.dev.burstnav-ecs` with **Window > Package Manager > Add package from
 disk** and select the `package.json` in this package folder, or add the
 equivalent local, registry or embedded package entry. Keep every `.meta` file:
 it carries the GUIDs that keep serialized references stable.
