@@ -1,5 +1,5 @@
 {
-    "name": "BurstNav.Free",
+    "name": "SnivelerCode.BurstNav.Runtime",
     "rootNamespace": "BurstNav",
     "references": [
         "Unity.Entities",

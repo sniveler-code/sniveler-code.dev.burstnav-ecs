@@ -156,14 +156,14 @@ frame. The command buffer may have armed it at the end of the previous frame.
 ## Assembly references
 
 Put gameplay code in its own assembly definition and reference
-`BurstNav.Free`. A minimal runtime assembly looks like this:
+`SnivelerCode.BurstNav.Runtime`. A minimal runtime assembly looks like this:
 
 ```json
 {
   "name": "Game.Navigation",
   "rootNamespace": "Game.Navigation",
   "references": [
-    "BurstNav.Free",
+    "SnivelerCode.BurstNav.Runtime",
     "Unity.Entities",
     "Unity.Burst",
     "Unity.Collections",
@@ -178,10 +178,10 @@ Put gameplay code in its own assembly definition and reference
 ```
 
 Add Unity.Entities.Hybrid and Unity.Transforms when the same assembly also
-contains authoring components and bakers. The `BurstNav.Free` assembly already
+contains authoring components and bakers. The `SnivelerCode.BurstNav.Runtime` assembly already
 references all of them, but assembly references are not transitive for your own
 code.
 
-Keep the `BurstNav.Free.asmdef` assembly name unchanged. Unity resolves
+Keep the `SnivelerCode.BurstNav.Runtime.asmdef` assembly name unchanged. Unity resolves
 assembly references by name, and a renamed assembly breaks every reference in
 this page.

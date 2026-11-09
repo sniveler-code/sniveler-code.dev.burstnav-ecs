@@ -58,12 +58,12 @@ BnAgentPathRequest
   com.unity.collections 2.4.0 and com.unity.mathematics 1.3.1, as declared in
   `package.json`. A host project may pin newer DOTS releases; the package is
   verified in Unity 6000.5.2f1 with com.unity.entities 6.5.0.
-- A project that references the `BurstNav.Free` assembly.
+- A project that references the `SnivelerCode.BurstNav.Runtime` assembly.
 - No scripting define and no editor setting.
 
 ## Assembly and namespace
 
-The runtime assembly is `BurstNav.Free` with root namespace `BurstNav`. It
+The runtime assembly is `SnivelerCode.BurstNav.Runtime` with root namespace `BurstNav`. It
 enables unsafe code and is auto-referenced. It references only Unity DOTS
 assemblies.
 

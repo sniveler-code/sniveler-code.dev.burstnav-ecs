@@ -1,8 +1,8 @@
 {
-    "name": "BurstNav.Free.Samples.HelloNavmesh",
+    "name": "SnivelerCode.BurstNav.Samples.HelloNavmesh",
     "rootNamespace": "BurstNav.Samples.HelloNavmesh",
     "references": [
-        "BurstNav.Free",
+        "SnivelerCode.BurstNav.Runtime",
         "Unity.Burst",
         "Unity.Collections",
         "Unity.Entities",

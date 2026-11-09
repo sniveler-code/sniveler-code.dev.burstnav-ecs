@@ -14,8 +14,8 @@ definition, a `README.md`, and a paired `.meta` file for every file and folder.
 | `2. Funnel Steering` (see [Funnel Steering README](../Samples~/2.%20Funnel%20Steering/README.md)) | Send four agents across a 6 x 6 grid on crossing diagonals and show how the funnel replaces a stair-step corridor with corner-cutting velocity. | `BnMeshAuthoring`, `BnAgentAuthoring`, `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample route component `BnFunnelRoute` |
 
 Folder numbering is contiguous from 1 inside the package. The sample assembly
-definitions are `BurstNav.Free.Samples.HelloNavmesh` and
-`BurstNav.Free.Samples.FunnelSteering`; each one references `BurstNav.Free` and
+definitions are `SnivelerCode.BurstNav.Samples.HelloNavmesh` and
+`SnivelerCode.BurstNav.Samples.FunnelSteering`; each one references `SnivelerCode.BurstNav.Runtime` and
 no other sample assembly.
 
 ## Import a sample
@@ -56,13 +56,13 @@ data types and spawns the agents, so the scene needs no bake step.
 | Symptom | Check |
 | --- | --- |
 | The sample is missing from the Samples tab | Confirm that `sniveler-code.dev.burstnav-ecs` is installed at version 1.1.0 and that `package.json` lists the sample under `samples`. Refresh the Package Manager window. |
-| Imported scripts report missing references | Keep the generated `Scripts` folder and its `.asmdef` intact. The assembly references `BurstNav.Free` plus the DOTS assemblies; a manual move can break the reference. |
+| Imported scripts report missing references | Keep the generated `Scripts` folder and its `.asmdef` intact. The assembly references `SnivelerCode.BurstNav.Runtime` plus the DOTS assemblies; a manual move can break the reference. |
 | The scene opens with missing scripts | Remove the old `Assets/Samples` copy, reimport the sample from the Samples tab and open the scene again. Two copies with different GUIDs can shadow each other. |
 | Agents stay still in Play mode | Enter Play mode, check the Console for job or Burst errors, and confirm that the default world is running. The Free samples create their graph and agents at Play start and need an active DOTS world. |
 | Gizmos are not visible | Select the `Gizmos` object and enable Gizmos in the Scene view toolbar. Gizmo drawing is a scene aid only; the simulation runs without it. |
 | The sample scenes are not under `Assets` | That is expected before import. `Samples~` is hidden by design. Import through the Samples tab rather than copying the folder. |
 
-Run the `BurstNav.Free.Tests.EditMode` and `BurstNav.Free.Tests.PlayMode`
+Run the `SnivelerCode.BurstNav.Tests.EditMode` and `SnivelerCode.BurstNav.Tests.PlayMode`
 assemblies from **Window > General > Test Runner** to exercise the coverage the
 samples rely on. Like any package test set, they are compiled only when
 `sniveler-code.dev.burstnav-ecs` is listed under `testables` in `Packages/manifest.json`.

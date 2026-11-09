@@ -70,14 +70,14 @@ The samples are copied out of `Samples~`, so the package copy stays untouched.
   `com.unity.collections` 2.4.0 and `com.unity.mathematics` 1.3.1, as declared
   in `package.json`. A host project may pin newer DOTS releases; the package is
   verified in Unity 6000.5.2f1 with `com.unity.entities` 6.5.0.
-- A project that references the `BurstNav.Free` assembly.
+- A project that references the `SnivelerCode.BurstNav.Runtime` assembly.
 - No scripting define and no editor setting.
 
 ## Assembly
 
-The runtime assembly is `BurstNav.Free` with root namespace `BurstNav`. It has
+The runtime assembly is `SnivelerCode.BurstNav.Runtime` with root namespace `BurstNav`. It has
 `allowUnsafeCode` enabled and is auto-referenced. It references only Unity DOTS
-assemblies. Gameplay code that uses Free types adds `BurstNav.Free` to its own
+assemblies. Gameplay code that uses Free types adds `SnivelerCode.BurstNav.Runtime` to its own
 assembly definition.
 
 ## Package scope

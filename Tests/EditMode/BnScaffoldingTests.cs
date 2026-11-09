@@ -1,25 +1,28 @@
 using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace BurstNav.Tests
 {
     public class BnScaffoldingTests
     {
-        private const string FreeRuntimeAsmdef = "BurstNav/Free/Runtime/BurstNav.Free.asmdef";
+        private const string RuntimeAssembly = "SnivelerCode.BurstNav.Runtime";
+        private const string FreeRuntimeAsmdef = "Runtime/SnivelerCode.BurstNav.Runtime.asmdef";
         private const string FreeEditModeAsmdef =
-            "BurstNav/Free/Tests/EditMode/BurstNav.Free.Tests.EditMode.asmdef";
+            "Tests/EditMode/SnivelerCode.BurstNav.Tests.EditMode.asmdef";
         private const string FreePlayModeAsmdef =
-            "BurstNav/Free/Tests/PlayMode/BurstNav.Free.Tests.PlayMode.asmdef";
+            "Tests/PlayMode/SnivelerCode.BurstNav.Tests.PlayMode.asmdef";
 
         private static readonly string[] RequiredDirectories =
         {
-            "BurstNav/Free/Runtime/Core",
-            "BurstNav/Free/Runtime/Systems",
-            "BurstNav/Free/Runtime/Authoring",
-            "BurstNav/Free/Tests/EditMode",
-            "BurstNav/Free/Tests/PlayMode",
+            "Runtime/Core",
+            "Runtime/Systems",
+            "Runtime/Authoring",
+            "Tests/EditMode",
+            "Tests/PlayMode",
         };
 
         private static readonly string[] RuntimePackages =
@@ -49,25 +52,29 @@ namespace BurstNav.Tests
         {
             foreach (var directory in RequiredDirectories)
             {
-                Assert.IsTrue(Directory.Exists(AssetPath(directory)), "Missing directory: " + directory);
+                Assert.IsTrue(Directory.Exists(PackagePath(directory)), "Missing directory: " + directory);
             }
         }
 
         [Test]
         public void EveryAssetAndFolder_HasAMetaFile()
         {
-            var root = AssetPath("BurstNav");
-            Assert.IsTrue(File.Exists(root + ".meta"), "Missing BurstNav.meta");
+            var root = PackageRoot;
 
             foreach (var entry in Directory.GetFileSystemEntries(root, "*", SearchOption.AllDirectories))
             {
-                var name = Path.GetFileName(entry);
-                if (name.Length == 0 || name[0] == '.' || name.EndsWith(".meta", StringComparison.Ordinal))
+                var relative = Path.GetRelativePath(root, entry);
+                if (relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Any(IsHidden))
                 {
                     continue;
                 }
 
-                Assert.IsTrue(File.Exists(entry + ".meta"), "Missing .meta for " + entry);
+                if (Path.GetFileName(entry).EndsWith(".meta", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Assert.IsTrue(File.Exists(entry + ".meta"), "Missing .meta for " + relative);
             }
         }
 
@@ -76,7 +83,7 @@ namespace BurstNav.Tests
         {
             var asmdef = Load(FreeRuntimeAsmdef);
 
-            Assert.AreEqual("BurstNav.Free", asmdef.name);
+            Assert.AreEqual(RuntimeAssembly, asmdef.name);
             Assert.AreEqual("BurstNav", asmdef.rootNamespace);
             CollectionAssert.IsSubsetOf(RuntimePackages, asmdef.references, "Missing DOTS package reference");
             AssertOnlyFreeRuntimeReferences(asmdef.references);
@@ -93,10 +100,10 @@ namespace BurstNav.Tests
 
                 Assert.AreEqual(
                     path == FreeEditModeAsmdef
-                        ? "BurstNav.Free.Tests.EditMode"
-                        : "BurstNav.Free.Tests.PlayMode",
+                        ? "SnivelerCode.BurstNav.Tests.EditMode"
+                        : "SnivelerCode.BurstNav.Tests.PlayMode",
                     asmdef.name);
-                CollectionAssert.Contains(asmdef.references, "BurstNav.Free", path);
+                CollectionAssert.Contains(asmdef.references, RuntimeAssembly, path);
                 AssertOnlyFreeRuntimeReferences(asmdef.references);
                 CollectionAssert.Contains(asmdef.references, "UnityEngine.TestRunner", path);
                 CollectionAssert.Contains(asmdef.precompiledReferences, "nunit.framework.dll", path);
@@ -123,7 +130,7 @@ namespace BurstNav.Tests
         public void TierIdentity_LivesInTheFreeAssembly()
         {
             Assert.AreEqual("BurstNav", typeof(BnTierInfo).Namespace);
-            Assert.AreEqual("BurstNav.Free", typeof(BnTierInfo).Assembly.GetName().Name);
+            Assert.AreEqual(RuntimeAssembly, typeof(BnTierInfo).Assembly.GetName().Name);
             Assert.IsFalse(BnTierInfo.IsPro);
             Assert.AreEqual(BnTier.Free, BnTierInfo.Current);
         }
@@ -132,19 +139,24 @@ namespace BurstNav.Tests
         {
             foreach (var reference in references)
             {
-                if (reference.StartsWith("BurstNav.", StringComparison.Ordinal))
+                if (reference.StartsWith("SnivelerCode.BurstNav", StringComparison.Ordinal))
                 {
-                    Assert.AreEqual("BurstNav.Free", reference, "Free assemblies may reference only the Free runtime.");
+                    Assert.AreEqual(RuntimeAssembly, reference, "Free assemblies may reference only the Free runtime.");
                 }
             }
         }
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string PackageRoot =>
+            PackageInfo.FindForAssembly(typeof(BnTierInfo).Assembly).resolvedPath;
+
+        private static bool IsHidden(string part) => part.Length > 0 && part[0] == '.';
+
+        private static string PackagePath(string relative) =>
+            Path.Combine(PackageRoot, relative.Replace('/', Path.DirectorySeparatorChar));
 
         private static AsmdefModel Load(string relative)
         {
-            var path = AssetPath(relative);
+            var path = PackagePath(relative);
             Assert.IsTrue(File.Exists(path), "Missing assembly definition: " + relative);
             var model = JsonUtility.FromJson<AsmdefModel>(File.ReadAllText(path));
             Assert.IsNotNull(model, "Unreadable assembly definition: " + relative);

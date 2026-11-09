@@ -24,7 +24,7 @@ disk** and select the `package.json` in this package folder, or add the
 equivalent local, registry or embedded package entry. Keep every `.meta` file:
 it carries the GUIDs that keep serialized references stable.
 
-The runtime assembly is `BurstNav.Free` with root namespace `BurstNav`. It is
+The runtime assembly is `SnivelerCode.BurstNav.Runtime` with root namespace `BurstNav`. It is
 auto-referenced and references only Unity DOTS assemblies.
 
 Wait for Unity to compile, then confirm that the console has no errors before

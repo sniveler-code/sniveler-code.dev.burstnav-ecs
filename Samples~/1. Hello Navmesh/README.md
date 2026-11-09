@@ -25,7 +25,7 @@ requests the opposite corner again.
 
 1. Add `sniveler-code.dev.burstnav-ecs` through Window > Package Manager > Add package from
    disk and select the package's `package.json`.
-2. Open Window > Package Manager, select BurstNav.Free, open the Samples tab and
+2. Open Window > Package Manager, select BurstNav Free, open the Samples tab and
    import Hello Navmesh.
 3. Open `Hello Navmesh.unity` and press Play.
 4. Select the `Gizmos` object to draw the grid, the corridor and the agent in

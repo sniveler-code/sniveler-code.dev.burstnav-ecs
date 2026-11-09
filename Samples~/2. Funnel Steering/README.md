@@ -27,7 +27,7 @@ corridors as gizmos.
 
 1. Add `sniveler-code.dev.burstnav-ecs` through Window > Package Manager > Add package from
    disk and select the package's `package.json`.
-2. Open Window > Package Manager, select BurstNav.Free, open the Samples tab and
+2. Open Window > Package Manager, select BurstNav Free, open the Samples tab and
    import Funnel Steering.
 3. Open `Funnel Steering.unity` and press Play.
 4. Select the `Gizmos` object to draw the grid, the corridors and the agents in

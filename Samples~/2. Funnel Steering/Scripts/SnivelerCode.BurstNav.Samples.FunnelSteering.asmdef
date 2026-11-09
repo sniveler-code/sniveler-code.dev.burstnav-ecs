@@ -1,8 +1,8 @@
 {
-    "name": "BurstNav.Free.Samples.FunnelSteering",
+    "name": "SnivelerCode.BurstNav.Samples.FunnelSteering",
     "rootNamespace": "BurstNav.Samples.FunnelSteering",
     "references": [
-        "BurstNav.Free",
+        "SnivelerCode.BurstNav.Runtime",
         "Unity.Burst",
         "Unity.Collections",
         "Unity.Entities",

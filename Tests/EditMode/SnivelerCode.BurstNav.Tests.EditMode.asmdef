@@ -1,8 +1,8 @@
 {
-    "name": "BurstNav.Free.Tests.EditMode",
+    "name": "SnivelerCode.BurstNav.Tests.EditMode",
     "rootNamespace": "BurstNav.Tests",
     "references": [
-        "BurstNav.Free",
+        "SnivelerCode.BurstNav.Runtime",
         "Unity.Entities",
         "Unity.Entities.Hybrid",
         "Unity.Transforms",
