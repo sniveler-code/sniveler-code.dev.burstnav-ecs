@@ -1,0 +1,30 @@
+{
+    "name": "com.burstnav.free",
+    "displayName": "BurstNav Free",
+    "version": "1.1.0",
+    "unity": "2022.3",
+    "description": "Zero-allocation navigation and pathfinding for Unity DOTS: flat A*, kinematic funnel steering and a static navmesh.",
+	"license": "MIT",
+	"author": {
+		"name": "SnivelerCode",
+		"url": "https://sniveler-code.github.io"
+	},
+    "dependencies": {
+        "com.unity.burst": "1.8.12",
+        "com.unity.collections": "2.4.0",
+        "com.unity.entities": "1.2.4",
+        "com.unity.mathematics": "1.3.1"
+    },
+    "samples": [
+        {
+            "displayName": "Hello Navmesh",
+            "description": "Bake a navmesh and move one agent with flat A*.",
+            "path": "Samples~/1. Hello Navmesh"
+        },
+        {
+            "displayName": "Funnel Steering",
+            "description": "Follow a path with kinematic funnel steering and a smooth corridor.",
+            "path": "Samples~/2. Funnel Steering"
+        }
+    ]
+}

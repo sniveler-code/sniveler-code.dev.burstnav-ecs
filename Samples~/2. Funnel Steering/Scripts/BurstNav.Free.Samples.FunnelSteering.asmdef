@@ -1,0 +1,21 @@
+{
+    "name": "BurstNav.Free.Samples.FunnelSteering",
+    "rootNamespace": "BurstNav.Samples.FunnelSteering",
+    "references": [
+        "BurstNav.Free",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Entities",
+        "Unity.Jobs",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
