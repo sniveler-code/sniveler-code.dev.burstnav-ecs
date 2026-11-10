@@ -43,7 +43,7 @@ BnAgentPathRequest
 
 `sniveler-code.dev.burstnav-ecs` owns its samples under `Samples~`. Open the Package
 Manager, select **BurstNav Free**, open the **Samples** tab and import Hello
-Navmesh or Funnel Steering. The generated copy lands under
+Navmesh, Funnel Steering or Stress Test. The generated copy lands under
 `Assets/Samples/BurstNav Free/<version>/`.
 
 The full sample guide, including the per-sample API table, run steps and

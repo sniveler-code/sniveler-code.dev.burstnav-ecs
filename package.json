@@ -25,6 +25,11 @@
             "displayName": "Funnel Steering",
             "description": "Follow a path with kinematic funnel steering and a smooth corridor.",
             "path": "Samples~/2. Funnel Steering"
+        },
+        {
+            "displayName": "Stress Test",
+            "description": "Stream 10,000 agents through a long walled field, pathfind them in batches and turn them around on arrival.",
+            "path": "Samples~/3. Stress Test"
         }
     ]
 }

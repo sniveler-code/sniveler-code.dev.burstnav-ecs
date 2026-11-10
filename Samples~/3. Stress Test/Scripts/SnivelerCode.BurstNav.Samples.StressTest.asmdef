@@ -1,0 +1,21 @@
+{
+    "name": "SnivelerCode.BurstNav.Samples.StressTest",
+    "rootNamespace": "BurstNav.Samples.StressTest",
+    "references": [
+        "SnivelerCode.BurstNav.Runtime",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Entities",
+        "Unity.Jobs",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

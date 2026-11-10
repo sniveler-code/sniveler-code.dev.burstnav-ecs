@@ -12,11 +12,13 @@ definition, a `README.md`, and a paired `.meta` file for every file and folder.
 | --- | --- | --- |
 | `1. Hello Navmesh` (see [Hello Navmesh README](../Samples~/1.%20Hello%20Navmesh/README.md)) | Build a 4 x 4 static navigation grid at Play start, spawn one agent and patrol it between opposite corners with flat A* and the kinematic funnel. | `BnMeshAuthoring`, `BnAgentAuthoring`, `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel` |
 | `2. Funnel Steering` (see [Funnel Steering README](../Samples~/2.%20Funnel%20Steering/README.md)) | Send four agents across a 6 x 6 grid on crossing diagonals and show how the funnel replaces a stair-step corridor with corner-cutting velocity. | `BnMeshAuthoring`, `BnAgentAuthoring`, `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample route component `BnFunnelRoute` |
+| `3. Stress Test` (see [Stress Test README](../Samples~/3.%20Stress%20Test/README.md)) | Stream 10,000 agents through a generated 160 x 48 metre serpentine field, pathfind them in batches, draw them with instanced quads and send them back on arrival. | `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnBlobMeshGraph`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample components `BnStressRoute`, `BnStressBootstrap`, `BnStressGoalSystem`, `BnStressRender`, `BnStressGizmos` |
 
 Folder numbering is contiguous from 1 inside the package. The sample assembly
-definitions are `SnivelerCode.BurstNav.Samples.HelloNavmesh` and
-`SnivelerCode.BurstNav.Samples.FunnelSteering`; each one references `SnivelerCode.BurstNav.Runtime` and
-no other sample assembly.
+definitions are `SnivelerCode.BurstNav.Samples.HelloNavmesh`,
+`SnivelerCode.BurstNav.Samples.FunnelSteering` and
+`SnivelerCode.BurstNav.Samples.StressTest`; each one references
+`SnivelerCode.BurstNav.Runtime` and no other sample assembly.
 
 ## Import a sample
 
@@ -25,7 +27,7 @@ no other sample assembly.
 2. Open **Window > Package Manager**.
 3. Select **BurstNav Free**.
 4. Open the **Samples** tab.
-5. Import **Hello Navmesh** or **Funnel Steering**.
+5. Import **Hello Navmesh**, **Funnel Steering** or **Stress Test**.
 6. Wait for compilation. Unity copies the sample into
    `Assets/Samples/BurstNav Free/<version>/` and keeps the package copy under
    `Samples~` unchanged.
@@ -44,10 +46,13 @@ copied assets by path and GUID, so a stale copy can shadow the new one.
 4. Inspect the agent entities in the Entities Hierarchy.
 
 Hello Navmesh patrols a single agent around a 4 x 4 grid; Funnel Steering sends
-four agents across a 6 x 6 grid on crossing diagonals. The linked sample READMEs
-own the per-frame outcomes and the per-sample tweaks.
+four agents across a 6 x 6 grid on crossing diagonals. Stress Test streams ten
+thousand agents through a long walled field and turns them around at the far
+band; its Gizmos object draws the walls and the two bands instead of per-agent
+corridors. The linked sample READMEs own the per-frame outcomes and the
+per-sample tweaks.
 
-Neither Free sample uses a SubScene. The bootstrap MonoBehaviour reads the
+No Free sample uses a SubScene. The bootstrap MonoBehaviour reads the
 authoring components when Play starts, builds the graph blob from the Free graph
 data types and spawns the agents, so the scene needs no bake step.
 
@@ -78,7 +83,7 @@ samples rely on. Like any package test set, they are compiled only when
 
 ## Package scope
 
-These two samples are the whole sample set of this package. There is no second
+These three samples are the whole sample set of this package. There is no second
 package with its own samples, and nothing outside `Samples~` is imported. When
 you change a sample, edit the copy under `Samples~`: the `Assets/Samples/...`
 copy is generated and is overwritten on the next import.
