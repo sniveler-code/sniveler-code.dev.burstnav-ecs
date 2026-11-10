@@ -77,8 +77,7 @@ namespace BurstNav.Tests
         [Test]
         public void Source_HasNoTierConditionalsOrPadFields()
         {
-            var source = File.ReadAllText(
-                Path.Combine(Application.dataPath, "BurstNav", "Free", "Runtime", "Core", "BnAgentComponents.cs"));
+            var source = File.ReadAllText(BnTestPaths.Package("Runtime/Core/BnAgentComponents.cs"));
 
             Assert.IsFalse(source.Contains("BURSTNAV_" + "PRO"));
             Assert.IsFalse(Regex.IsMatch(source, @"^[ \t]*#(?:if|elif|else|endif)", RegexOptions.Multiline));

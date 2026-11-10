@@ -17,7 +17,7 @@ namespace BurstNav.Tests
 {
     public class BnSteeringSystemTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Systems/BnSteeringSystem.cs";
+        private const string SourceRelativePath = "Runtime/Systems/BnSteeringSystem.cs";
 
         private static readonly Type[] SteeringJobTypes =
         {
@@ -246,8 +246,7 @@ namespace BurstNav.Tests
             Status = status,
         };
 
-        private static string AssetPath(string relative) =>
-            System.IO.Path.Combine(Application.dataPath, relative.Replace('/', System.IO.Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
 
         private static string ExtractMethodBody(string source, string methodName)
         {

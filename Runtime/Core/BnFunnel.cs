@@ -5,6 +5,7 @@ using Unity.Mathematics;
 
 namespace BurstNav
 {
+    [BurstCompile]
     public static class BnFunnel
     {
         public const float DefaultArrivalRadius = 0.05f;

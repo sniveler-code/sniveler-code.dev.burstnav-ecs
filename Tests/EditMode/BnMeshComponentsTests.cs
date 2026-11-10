@@ -16,7 +16,7 @@ namespace BurstNav.Tests
 {
     public class BnMeshComponentsTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Core/BnMeshComponents.cs";
+        private const string SourceRelativePath = "Runtime/Core/BnMeshComponents.cs";
 
         private static readonly Type[] GraphTypes =
         {
@@ -271,8 +271,7 @@ namespace BurstNav.Tests
 
         private static int FieldSize(Type type) => UnsafeUtility.SizeOf(type);
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
 
         [BurstCompile(CompileSynchronously = true)]
         private struct GraphProbeJob : IJob

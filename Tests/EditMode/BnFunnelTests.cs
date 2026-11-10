@@ -15,7 +15,7 @@ namespace BurstNav.Tests
 {
     public class BnFunnelTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Core/BnFunnel.cs";
+        private const string SourceRelativePath = "Runtime/Core/BnFunnel.cs";
 
         [Test]
         public void GetNextWaypoint_StraightCorridor_ReturnsTheFarTarget()
@@ -578,8 +578,7 @@ namespace BurstNav.Tests
 
         private static string ReadSource() => File.ReadAllText(AssetPath(SourceRelativePath));
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
 
         private static BnAgentPath ReadyPath(int waypointCount) => new BnAgentPath
         {

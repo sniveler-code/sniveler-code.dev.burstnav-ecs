@@ -239,6 +239,7 @@ namespace BurstNav
         }
     }
 
+    [BurstCompile]
     public static class BnAStar
     {
         [BurstCompile]
@@ -265,7 +266,7 @@ namespace BurstNav
             int startPoly,
             int targetPoly,
             ref BnPathScratchpad scratch,
-            BnLinkFilter filter,
+            in BnLinkFilter filter,
             int maxIterations)
         {
             return FindPathCore(
@@ -284,8 +285,8 @@ namespace BurstNav
             int startPoly,
             int targetPoly,
             ref BnPathScratchpad scratch,
-            BnLinkFilter filter,
-            NativeArray<ushort> linkTagMasks,
+            in BnLinkFilter filter,
+            in NativeArray<ushort> linkTagMasks,
             int maxIterations)
         {
             return FindPathCore(

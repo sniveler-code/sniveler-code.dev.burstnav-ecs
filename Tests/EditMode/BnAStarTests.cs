@@ -17,7 +17,7 @@ namespace BurstNav.Tests
 {
     public class BnAStarTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Core/BnAStar.cs";
+        private const string SourceRelativePath = "Runtime/Core/BnAStar.cs";
         private const string ProSymbol = "BURSTNAV_" + "PRO";
 
         private const int GridWidth = 6;
@@ -277,11 +277,11 @@ namespace BurstNav.Tests
                 {
                     var parameters = candidate.GetParameters();
                     return candidate.Name == "FindPath" && parameters.Length == 6 &&
-                           parameters[4].ParameterType == typeof(BnLinkFilter);
+                           parameters[4].ParameterType == typeof(BnLinkFilter).MakeByRefType();
                 });
 
             Assert.IsNotNull(filtered.GetCustomAttribute<BurstCompileAttribute>());
-            Assert.AreEqual(typeof(BnLinkFilter), filtered.GetParameters()[4].ParameterType);
+            Assert.AreEqual(typeof(BnLinkFilter).MakeByRefType(), filtered.GetParameters()[4].ParameterType);
             Assert.AreEqual(typeof(int), filtered.GetParameters()[5].ParameterType);
 
             var sidecar = typeof(BnAStar)
@@ -290,8 +290,8 @@ namespace BurstNav.Tests
                 {
                     var parameters = candidate.GetParameters();
                     return candidate.Name == "FindPath" && parameters.Length == 7 &&
-                           parameters[4].ParameterType == typeof(BnLinkFilter) &&
-                           parameters[5].ParameterType == typeof(NativeArray<ushort>);
+                           parameters[4].ParameterType == typeof(BnLinkFilter).MakeByRefType() &&
+                           parameters[5].ParameterType == typeof(NativeArray<ushort>).MakeByRefType();
                 });
 
             Assert.IsNotNull(sidecar.GetCustomAttribute<BurstCompileAttribute>());
@@ -853,8 +853,7 @@ namespace BurstNav.Tests
             }
         }
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
 
         private sealed class ScratchpadLease : IDisposable
         {

@@ -237,9 +237,11 @@ Free compiles three overloads:
 
 ```text
 bool FindPath(ref BnMeshGraphBlob graph, int startPoly, int targetPoly, ref BnPathScratchpad scratch, int maxIterations)
-bool FindPath(ref BnMeshGraphBlob graph, int startPoly, int targetPoly, ref BnPathScratchpad scratch, BnLinkFilter filter, int maxIterations)
-bool FindPath(ref BnMeshGraphBlob graph, int startPoly, int targetPoly, ref BnPathScratchpad scratch, BnLinkFilter filter, NativeArray<ushort> linkTagMasks, int maxIterations)
+bool FindPath(ref BnMeshGraphBlob graph, int startPoly, int targetPoly, ref BnPathScratchpad scratch, in BnLinkFilter filter, int maxIterations)
+bool FindPath(ref BnMeshGraphBlob graph, int startPoly, int targetPoly, ref BnPathScratchpad scratch, in BnLinkFilter filter, in NativeArray<ushort> linkTagMasks, int maxIterations)
 ```
+
+`filter` and `linkTagMasks` are `in` parameters, not values. Burst rejects structs passed by value to an external `[BurstCompile]` function (BC1064), so the reference form is part of the contract: call with a local, `BnLinkFilter.PassThrough` or `default`.
 
 `BnLinkFilter` is a branch-free link predicate. `PassThrough` (the default
 value) allows every link. A non-zero `IgnoreTagged` rejects every link that has

@@ -12,7 +12,7 @@ namespace BurstNav.Tests
 {
     public class BnTierTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Core/BnTier.cs";
+        private const string SourceRelativePath = "Runtime/Core/BnTier.cs";
 
         [Test]
         public void TierInfo_ReportsTheFreeTier()
@@ -70,7 +70,6 @@ namespace BurstNav.Tests
             StringAssert.Contains("Name = \"Free\"", source);
         }
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
     }
 }

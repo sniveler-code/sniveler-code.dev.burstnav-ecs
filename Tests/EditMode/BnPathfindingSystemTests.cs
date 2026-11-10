@@ -16,7 +16,7 @@ namespace BurstNav.Tests
 {
     public class BnPathfindingSystemTests
     {
-        private const string SourceRelativePath = "BurstNav/Free/Runtime/Systems/BnPathfindingSystem.cs";
+        private const string SourceRelativePath = "Runtime/Systems/BnPathfindingSystem.cs";
 
         private const int GridWidth = 6;
         private const int GridHeight = 4;
@@ -354,8 +354,7 @@ namespace BurstNav.Tests
             return string.Empty;
         }
 
-        private static string AssetPath(string relative) =>
-            Path.Combine(Application.dataPath, relative.Replace('/', Path.DirectorySeparatorChar));
+        private static string AssetPath(string relative) => BnTestPaths.Package(relative);
 
         private sealed class Fixture : IDisposable
         {
