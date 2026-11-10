@@ -28,7 +28,7 @@
         },
         {
             "displayName": "Stress Test",
-            "description": "Stream 10,000 agents through a long walled field, pathfind them in batches and turn them around on arrival.",
+            "description": "Stream 10,000 agents through a 160 x 48 metre field with scattered obstacles, pathfind them in batches, render them with Entities Graphics and turn them around on arrival.",
             "path": "Samples~/3. Stress Test"
         }
     ]

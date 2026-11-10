@@ -12,7 +12,7 @@ definition, a `README.md`, and a paired `.meta` file for every file and folder.
 | --- | --- | --- |
 | `1. Hello Navmesh` (see [Hello Navmesh README](../Samples~/1.%20Hello%20Navmesh/README.md)) | Build a 4 x 4 static navigation grid at Play start, spawn one agent and patrol it between opposite corners with flat A* and the kinematic funnel. | `BnMeshAuthoring`, `BnAgentAuthoring`, `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel` |
 | `2. Funnel Steering` (see [Funnel Steering README](../Samples~/2.%20Funnel%20Steering/README.md)) | Send four agents across a 6 x 6 grid on crossing diagonals and show how the funnel replaces a stair-step corridor with corner-cutting velocity. | `BnMeshAuthoring`, `BnAgentAuthoring`, `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample route component `BnFunnelRoute` |
-| `3. Stress Test` (see [Stress Test README](../Samples~/3.%20Stress%20Test/README.md)) | Stream 10,000 agents through a generated 160 x 48 metre serpentine field, pathfind them in batches, draw them with instanced quads and send them back on arrival. | `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnBlobMeshGraph`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample components `BnStressRoute`, `BnStressBootstrap`, `BnStressGoalSystem`, `BnStressRender`, `BnStressGizmos` |
+| `3. Stress Test` (see [Stress Test README](../Samples~/3.%20Stress%20Test/README.md)) | Stream 10,000 agents through a 160 x 48 metre open field with scattered obstacle blocks, pathfind them in batches, draw them with Entities Graphics and send them back on arrival. | `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData`, `BnBlobMeshGraph`, `BnAgentComponents.CreateAgentArchetype`, `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest`, `BnPathWaypoint`, `BnPathfindingSystem`, `BnSteeringSystem`, `BnFunnel`, sample components `BnStressRoute`, `BnStressFieldAuthoring`, `BnStressSpawnAuthoring`, `BnStressSpawnSystem`, `BnStressGoalSystem`, `BnStressTransformSystem` |
 
 Folder numbering is contiguous from 1 inside the package. The sample assembly
 definitions are `SnivelerCode.BurstNav.Samples.HelloNavmesh`,
@@ -23,7 +23,9 @@ definitions are `SnivelerCode.BurstNav.Samples.HelloNavmesh`,
 ## Import a sample
 
 1. Open the project in Unity 2022.3 or newer and import the DOTS packages from
-   [Free requirements](README.md#requirements).
+   [Free requirements](README.md#requirements). Stress Test also needs
+   Entities Graphics and URP, because its crowd renders through Entities
+   Graphics.
 2. Open **Window > Package Manager**.
 3. Select **BurstNav Free**.
 4. Open the **Samples** tab.
@@ -47,14 +49,15 @@ copied assets by path and GUID, so a stale copy can shadow the new one.
 
 Hello Navmesh patrols a single agent around a 4 x 4 grid; Funnel Steering sends
 four agents across a 6 x 6 grid on crossing diagonals. Stress Test streams ten
-thousand agents through a long walled field and turns them around at the far
-band; its Gizmos object draws the walls and the two bands instead of per-agent
-corridors. The linked sample READMEs own the per-frame outcomes and the
-per-sample tweaks.
+thousand agents through a 160 x 48 metre field with scattered obstacle blocks
+and turns them around in the far band; its obstacles are a baked static render
+entity and its agents render through Entities Graphics, so there is no
+GameObject per agent. The linked sample READMEs own the per-frame outcomes and
+the per-sample tweaks.
 
-No Free sample uses a SubScene. The bootstrap MonoBehaviour reads the
-authoring components when Play starts, builds the graph blob from the Free graph
-data types and spawns the agents, so the scene needs no bake step.
+Stress Test authors the field, the agent prefab and the spawn settings in a
+SubScene. Hello Navmesh and Funnel Steering build their graph and agents at Play
+start instead. Either way the scene needs no manual bake step.
 
 ## Troubleshooting
 

@@ -6,26 +6,25 @@ namespace BurstNav.Samples.StressTest
 {
     public static class BnStressField
     {
-        public const int WallPeriod = 6;
+        public const int WallPeriod = 7;
 
-        public const int SpawnWidth = 3;
+        public const int RowPeriod = 5;
 
-        public const int GoalWidth = 3;
+        public const int SpawnWidth = 6;
+
+        public const int GoalWidth = 6;
 
         public static bool IsBlocked(int x, int y, int cellsX, int cellsY)
         {
-            if ((x < SpawnWidth) | (x >= cellsX - GoalWidth))
+            if ((x < SpawnWidth + 1) | (x >= cellsX - GoalWidth - 1))
             {
                 return false;
             }
 
-            if (x % WallPeriod == 3)
-            {
-                var gapLow = ((x / WallPeriod) & 1) == 0;
-                return gapLow ? y > 1 : y < cellsY - 2;
-            }
-
-            return (x % WallPeriod == 1) & (y % 5 == 2);
+            var shift = ((y / RowPeriod) & 1) * 2;
+            var localX = (x + shift) % WallPeriod;
+            var localY = y % RowPeriod;
+            return (localX >= 2) & (localX <= 4) & (localY >= 1) & (localY <= 2);
         }
 
         public static BlobAssetReference<BnMeshGraphBlob> Build(int cellsX, int cellsY, float cellSize, float2 origin)

@@ -2,29 +2,42 @@
 
 ## What it shows
 
-Ten thousand agents cross a 160 x 48 metre serpentine field made of 80 x 24
-cells of 2 metres and then walk back. The sample exercises the Free pipeline at
-scale: one blob graph with roughly 1.4 thousand polygons, one flat A* search per
-request, kinematic funnel steering for every agent and instanced rendering with
-no GameObject per agent.
+Ten thousand agents cross a 160 x 48 metre open field with scattered obstacle
+blocks and then walk back. The sample exercises the Free pipeline at scale: one
+baked blob graph, one flat A* search per request, kinematic funnel steering for
+every agent, and rendering through Entities Graphics with no GameObject per
+agent.
 
-The field is generated, not authored. `BnStressField` walls off every sixth
-column and leaves a two-cell gap that alternates between the bottom and the top,
-so the only route through the level is a long serpentine corridor. Single-cell
-pillars sit inside the corridors and cannot disconnect them. The first three
-columns are the spawn band and the last three columns are the goal band; both
-stay free of walls. The field yields 1574 free polygons and 5276 directed links.
+The level is authored in a SubScene:
 
-Agents spawn in batches from the four-column spawn band, path to a random cell in
-the goal band, and on arrival swap `BnStressRoute.Home` and `BnStressRoute.Goal`
-and request the return path. The demo runs forever without a fixed end.
+| Object | Authoring | What it bakes |
+| --- | --- | --- |
+| `Walls` | `BnStressFieldAuthoring` plus a `MeshFilter` and `MeshRenderer` | The `BnBlobMeshGraph` singleton and one static render entity for the obstacle quads. |
+| `Floor` | Quad with `MeshRenderer` | One static render entity. |
+| `Spawner` | `BnStressSpawnAuthoring` | The `BnStressSpawnConfig` singleton with the agent prefab reference, the agent count and the spawn rate. |
+| `AgentPrefab` (prefab asset) | `BnAgentAuthoring`, `BnStressAgentAuthoring`, `MeshFilter`, `MeshRenderer` | The dominant agent archetype plus `BnStressRoute` and Entities Graphics render components. |
 
-The scene has no SubScene and no bake step. `BnStressBootstrap` builds the graph
-blob with `BlobBuilder` from the Free graph data types, creates the
-`BnBlobMeshGraph` singleton, and spawns `SpawnPerFrame` agents from the dominant
-archetype every frame until `AgentCount` is reached. `BnStressRender` reads the
-steering positions and draws instanced quads with `Graphics.RenderMeshInstanced`,
-so the cost of the crowd is the simulation, not ten thousand GameObjects.
+`BnStressField` places 3 x 2 obstacle blocks on a staggered 7 x 5 lattice, so
+every corridor is at least two cells wide and the field stays connected while
+looking irregular. The first and last six columns stay clear: they are the spawn
+and goal bands.
+
+`BnStressSpawnSystem` instantiates the prefab in batches of `SpawnPerFrame`
+behind the pathfinding system, gives each agent a random point inside a free
+spawn cell, a random goal point in the far band and an individual speed between
+3 and 6 m/s. Because agents start at different points and travel at different
+speeds, the crowd spreads over the field instead of forming a single file line.
+
+On arrival `BnStressGoalSystem` swaps `BnStressRoute.Home` and
+`BnStressRoute.Goal` and re-arms the search request, so the crowd returns the
+same way it came. `BnStressTransformSystem` copies `BnAgentSteering.Position`
+into `LocalTransform` so Entities Graphics draws the current position.
+
+## Requirements
+
+- Unity 2022.3 or newer with Entities, Entities Graphics and URP.
+- The Free package (`sniveler-code.dev.burstnav-ecs`).
+- URP asset assigned in the project; the sample materials are URP/Unlit.
 
 ## How to run
 
@@ -33,33 +46,35 @@ so the cost of the crowd is the simulation, not ten thousand GameObjects.
 2. Open Window > Package Manager, select BurstNav Free, open the Samples tab and
    import Stress Test.
 3. Open `Stress Test.unity` and press Play.
-4. Watch the counter and the crowd. The field fills over a few seconds because
-   agents are spawned and pathfound in batches.
-5. Select the `Gizmos` object to draw the walls, the spawn band and the goal band
-   in the Scene view.
+4. The HUD shows the live agent count, frame rate and frame time. The crowd
+   fills the field within a few seconds and returns after reaching the far band.
+5. Select the `Stress Field` object and open the SubScene if you want to inspect
+   or edit the field and the spawn settings.
 
 ## Knobs
 
-| Field on `Bootstrap` | Default | Effect |
+| Field on `Spawner` | Default | Effect |
 | --- | --- | --- |
+| `AgentPrefab` | `Art/StressAgent.prefab` | Prefab every agent is instantiated from. |
 | `AgentCount` | 10000 | Total agents spawned. |
-| `SpawnPerFrame` | 64 | Agents added per frame; also the number of A* searches per frame while the crowd is filling. |
-| `MaxSpeed` | 4 | Speed of every agent in metres per second. |
-| `Radius` | 0.3 | Steering radius and arrival tolerance per agent. |
-| `CellsX`, `CellsY`, `CellSize` | 80, 24, 2 | Field dimensions; the maze pattern follows them. |
-| `StartActive` | true | Initial `BnAgentSteeringActive` toggle. |
+| `SpawnPerFrame` | 64 | Agents instantiated per frame; also the number of A* searches per frame while the crowd fills. |
+| `CellsX`, `CellsY`, `CellSize` | 80, 24, 2 | Field size; the obstacle lattice follows the same rule as `BnStressField`. |
+
+`BnAgentAuthoring` on the prefab sets the base speed and radius; the spawn
+system overrides the speed with a random 3 to 6 m/s per agent.
 
 ## Expected load
 
-- Graph: 80 x 24 cells, 1574 free polygons and 5276 directed links.
-- Pathfinding: one single-threaded A* per pending agent. The batch is
-  `SpawnPerFrame` while filling and the arriving agents share the same retry
-  throttle, so a frame never schedules the whole crowd at once.
+- Graph: 80 x 24 cells with 288 blocked cells, 1632 free polygons and 5832
+  directed links.
+- Pathfinding: one single-threaded A* per pending agent, throttled to the spawn
+  batch and the arrival retry budget.
 - Steering: funnel, bypass and integration run in parallel over the crowd.
-- Rendering: instanced quads in batches of 1023, no per-agent GameObject.
+- Rendering: Entities Graphics instanced quads, one entity per agent and no
+  GameObject per agent.
 
-Lower `SpawnPerFrame` if the first seconds are too spiky on a small machine, and
-raise it when the editor has headroom.
+Measured in Unity 6000.5.2f1 with URP: 10000 agents, 130-160 fps in the Play
+mode game view (about 6.5 ms per frame), zero failed paths.
 
 ## Free API used
 
@@ -67,16 +82,15 @@ raise it when the editor has headroom.
 | --- | --- |
 | `BnMeshGraphBlob`, `BnPolygon`, `BnLinkData` | Graph layout the field builder fills into a blob asset with `BlobBuilder`. |
 | `BnBlobMeshGraph` | Singleton component that owns the blob. |
-| `BnAgentComponents.CreateAgentArchetype` | Dominant archetype every agent is spawned from. |
+| `BnAgentComponents.CreateAgentArchetype` | Archetype contract the prefab extends with `BnStressRoute`. |
 | `BnAgentSteering`, `BnAgentPath`, `BnAgentPathRequest` | Per-agent steering state, path slot and search request. |
 | `BnPathWaypoint` | Corridor storage the funnel sweeps through. |
 | `BnPathfindingSystem` | Runs flat A* and writes one corridor per request. |
 | `BnSteeringSystem` | Runs `BnFunnelJob`, the kinematic bypass and integration. |
 | `BnFunnel` | Turns the corridor portals into a desired velocity. |
-| `BnStressBootstrap` | Builds the field and streams agents into the world. |
+| `BnStressSpawnSystem` | Streams prefab instances and seeds route and request state. |
 | `BnStressGoalSystem` | Swaps the route and re-arms the request on arrival. |
-| `BnStressRender` | Instanced crowd rendering without GameObjects. |
-| `BnStressGizmos` | Draws the walls and the two bands in the Scene view. |
+| `BnStressTransformSystem` | Copies steering positions into `LocalTransform` for Entities Graphics. |
 
 The sample uses no crowd avoidance: agents overlap, and the demo shows
 throughput and steering cost rather than separation. Add a post-steering stage
