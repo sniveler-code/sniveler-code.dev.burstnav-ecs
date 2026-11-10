@@ -155,8 +155,7 @@ namespace BurstNav
             while (skipping & (index < last))
             {
                 ResolvePortal(ref graph, in corridor, index, out var portalLeft, out var portalRight);
-                skipping = (math.distancesq(apex, portalLeft) < DegenerateDistSq) &
-                           (math.distancesq(apex, portalRight) < DegenerateDistSq);
+                skipping = ApexOnPortal(apex, portalLeft, portalRight);
                 index += math.select(0, 1, skipping);
             }
 
@@ -170,6 +169,16 @@ namespace BurstNav
             return new float3(waypoint.x, waypoint.y, targetPosition.z);
         }
 
+
+        private static bool ApexOnPortal(float2 apex, float2 left, float2 right)
+        {
+            var edge = right - left;
+            var edgeLengthSq = math.lengthsq(edge);
+            var offset = apex - left;
+            var along = math.select(0f, math.saturate(math.dot(offset, edge) * math.rcp(math.max(edgeLengthSq, Epsilon))), edgeLengthSq > Epsilon);
+            var closest = left + edge * along;
+            return math.distancesq(apex, closest) <= DegenerateDistSq;
+        }
 
         private static int Advance(
             ref BnAgentSteering steering,

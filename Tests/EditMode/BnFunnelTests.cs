@@ -79,6 +79,25 @@ namespace BurstNav.Tests
         }
 
         [Test]
+        public void GetNextWaypoint_SkipsPortalWhenTheApexSitsOnOneEndpoint()
+        {
+            using var graph = BuildGraph(new[]
+            {
+                (Left: new float2(0f, 0f), Right: new float2(0f, 2f)),
+                (Left: new float2(2f, 0f), Right: new float2(2f, 2f)),
+            });
+            using var waypoints = Waypoints(
+                (float3.zero, float3.zero, 0),
+                (new float3(1f, 0f, 0f), float3.zero, 1),
+                (new float3(3f, 0f, 0f), float3.zero, -1));
+
+            var next = BnFunnel.GetNextWaypoint(ref graph.Value, waypoints, 0, float3.zero, new float3(3f, 0f, 0f));
+
+            Assert.Greater(math.distance(next, float3.zero), 0.5f,
+                "An apex on a portal endpoint must steer away instead of returning the apex as the corner.");
+        }
+
+        [Test]
         public void GetNextWaypoint_FallsBackToExitPoint_WhenTheLinkIsMissing()
         {
             using var graph = BuildGraph(StraightPortals(1));

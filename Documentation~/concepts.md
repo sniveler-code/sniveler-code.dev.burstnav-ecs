@@ -230,9 +230,12 @@ fields.
 BnFunnel is a string-pulling solver over the portal corridor. For each frame it:
 
 1. Advances the cursor past every portal the agent has already crossed.
-2. Tightens a left/right cone from the agent position through the remaining
+2. Skips any portal whose segment contains the agent position, so a funnel
+   corner reached exactly on a portal endpoint does not become a zero-length
+   direction.
+3. Tightens a left/right cone from the agent position through the remaining
    portals.
-3. Returns the first funnel corner, or the final waypoint when the string stays
+4. Returns the first funnel corner, or the final waypoint when the string stays
    straight.
 
 BnFunnel.Solve then writes a planar desired velocity:

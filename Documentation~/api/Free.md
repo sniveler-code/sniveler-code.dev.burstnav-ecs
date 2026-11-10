@@ -339,7 +339,9 @@ fix.
 and `Flags` from the agent's `BnPathWaypoint` corridor and the graph portals.
 The `DynamicBuffer` overloads and `NativeArray` overloads have identical
 semantics. `AdvancePathProgress` advances the cursor over crossed portals, and
-`GetNextWaypoint` returns the next funnel corner for a given corridor window.
+`GetNextWaypoint` returns the next funnel corner for a given corridor window,
+skipping portals whose segment contains the agent position so an apex on a
+portal endpoint never yields a zero-length corner.
 `Solve` is the only Burst-compiled entry point; `AdvancePathProgress` and
 `GetNextWaypoint` are plain static methods. All of them allocate nothing and
 own no memory. `Solve` writes the steering value and also writes
