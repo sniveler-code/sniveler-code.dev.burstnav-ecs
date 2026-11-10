@@ -137,7 +137,7 @@ namespace BurstNav
 
     public static class BnAgentComponents
     {
-        public const int DefaultPathCapacity = 16;
+        public const int DefaultPathCapacity = 8;
 
         public static EntityArchetype CreateAgentArchetype(EntityManager entityManager) => entityManager.CreateArchetype(
             ComponentType.ReadWrite<BnAgentSteering>(),
