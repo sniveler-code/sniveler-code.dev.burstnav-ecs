@@ -6,25 +6,236 @@ namespace BurstNav.Samples.StressTest
 {
     public static class BnStressField
     {
-        public const int WallPeriod = 7;
+        public const int SpawnWidth = 8;
 
-        public const int RowPeriod = 5;
+        public const int GoalWidth = 8;
 
-        public const int SpawnWidth = 6;
+        public const int ObstacleSeed = 20251110;
 
-        public const int GoalWidth = 6;
+        public const int TargetBlockedPercent = 12;
 
-        public static bool IsBlocked(int x, int y, int cellsX, int cellsY)
+        public const int MaxStraightRun = 10;
+
+        public static void FillMask(NativeArray<byte> mask, int cellsX, int cellsY, int seed)
         {
-            if ((x < SpawnWidth + 1) | (x >= cellsX - GoalWidth - 1))
+            var xCount = math.max(cellsX, 1);
+            var yCount = math.max(cellsY, 1);
+            var count = math.min(mask.Length, xCount * yCount);
+
+            for (var index = 0; index < count; index++)
             {
-                return false;
+                mask[index] = 0;
             }
 
-            var shift = ((y / RowPeriod) & 1) * 2;
-            var localX = (x + shift) % WallPeriod;
-            var localY = y % RowPeriod;
-            return (localX >= 2) & (localX <= 4) & (localY >= 1) & (localY <= 2);
+            if ((xCount <= SpawnWidth + GoalWidth + 8) | (yCount < 6))
+            {
+                return;
+            }
+
+            var seen = new NativeArray<byte>(count, Allocator.Temp);
+            var queue = new NativeArray<int>(count, Allocator.Temp);
+
+            try
+            {
+                var state = (uint)seed | 1u;
+                var target = count * TargetBlockedPercent / 100;
+                var blocked = 0;
+                var attempts = 0;
+
+                while ((blocked < target) & (attempts < 4000))
+                {
+                    attempts++;
+                    var width = 2 + (int)(Next(ref state) % 2u);
+                    var height = 1 + (int)(Next(ref state) % 2u);
+                    var maxX = xCount - GoalWidth - width;
+
+                    if (maxX <= SpawnWidth)
+                    {
+                        continue;
+                    }
+
+                    var originX = SpawnWidth + (int)(Next(ref state) % (uint)(maxX - SpawnWidth));
+                    var originY = (int)(Next(ref state) % (uint)(yCount - height + 1));
+
+                    var free = true;
+                    for (var y = originY; y < originY + height; y++)
+                    {
+                        for (var x = originX; x < originX + width; x++)
+                        {
+                            free &= mask[y * xCount + x] == 0;
+                        }
+                    }
+
+                    if (!free)
+                    {
+                        continue;
+                    }
+
+                    for (var y = originY; y < originY + height; y++)
+                    {
+                        for (var x = originX; x < originX + width; x++)
+                        {
+                            mask[y * xCount + x] = 1;
+                        }
+                    }
+
+                    if (Connected(mask, seen, queue, xCount, yCount))
+                    {
+                        blocked += width * height;
+                        continue;
+                    }
+
+                    for (var y = originY; y < originY + height; y++)
+                    {
+                        for (var x = originX; x < originX + width; x++)
+                        {
+                            mask[y * xCount + x] = 0;
+                        }
+                    }
+                }
+
+                var placements = 0;
+                while (placements < 256)
+                {
+                    var bestRun = 0;
+                    var bestRow = -1;
+                    var bestColumn = -1;
+
+                    for (var y = 0; y < yCount; y++)
+                    {
+                        var x = SpawnWidth;
+                        while (x < xCount - GoalWidth)
+                        {
+                            if (mask[y * xCount + x] != 0)
+                            {
+                                x++;
+                                continue;
+                            }
+
+                            var start = x;
+                            while ((x < xCount - GoalWidth) && (mask[y * xCount + x] == 0))
+                            {
+                                x++;
+                            }
+
+                            var run = x - start;
+                            if ((run > MaxStraightRun) & (run > bestRun))
+                            {
+                                bestRun = run;
+                                bestRow = y;
+                                bestColumn = (start + x) / 2;
+                            }
+                        }
+                    }
+
+                    if (bestRun <= MaxStraightRun)
+                    {
+                        break;
+                    }
+
+                    var placed = false;
+                    for (var offset = 0; offset < 3; offset++)
+                    {
+                        var y = bestRow + math.select(0, math.select(-1, 1, offset == 2), offset > 0);
+                        if ((y < 0) | (y >= yCount))
+                        {
+                            continue;
+                        }
+
+                        var cell = y * xCount + bestColumn;
+                        if (mask[cell] != 0)
+                        {
+                            continue;
+                        }
+
+                        mask[cell] = 1;
+                        if (Connected(mask, seen, queue, xCount, yCount))
+                        {
+                            blocked++;
+                            placements++;
+                            placed = true;
+                            break;
+                        }
+
+                        mask[cell] = 0;
+                    }
+
+                    if (!placed)
+                    {
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                seen.Dispose();
+                queue.Dispose();
+            }
+        }
+
+        private static uint Next(ref uint state)
+        {
+            state = state * 1664525u + 1013904223u;
+            return state >> 16;
+        }
+
+        private static bool Connected(NativeArray<byte> mask, NativeArray<byte> seen, NativeArray<int> queue, int xCount, int yCount)
+        {
+            var depth = yCount * xCount;
+            for (var index = 0; index < depth; index++)
+            {
+                seen[index] = 0;
+            }
+
+            var head = 0;
+            var tail = 0;
+
+            for (var y = 0; y < yCount; y++)
+            {
+                var cell = y * xCount;
+                if (mask[cell] == 0)
+                {
+                    seen[cell] = 1;
+                    queue[tail++] = cell;
+                }
+            }
+
+            while (head < tail)
+            {
+                var cell = queue[head++];
+                var x = cell % xCount;
+
+                if (x >= xCount - GoalWidth)
+                {
+                    return true;
+                }
+
+                if (((x + 1) < xCount) && (mask[cell + 1] == 0) && (seen[cell + 1] == 0))
+                {
+                    seen[cell + 1] = 1;
+                    queue[tail++] = cell + 1;
+                }
+
+                if ((x > 0) && (mask[cell - 1] == 0) && (seen[cell - 1] == 0))
+                {
+                    seen[cell - 1] = 1;
+                    queue[tail++] = cell - 1;
+                }
+
+                if (((cell + xCount) < depth) && (mask[cell + xCount] == 0) && (seen[cell + xCount] == 0))
+                {
+                    seen[cell + xCount] = 1;
+                    queue[tail++] = cell + xCount;
+                }
+
+                if (((cell - xCount) >= 0) && (mask[cell - xCount] == 0) && (seen[cell - xCount] == 0))
+                {
+                    seen[cell - xCount] = 1;
+                    queue[tail++] = cell - xCount;
+                }
+            }
+
+            return false;
         }
 
         public static BlobAssetReference<BnMeshGraphBlob> Build(int cellsX, int cellsY, float cellSize, float2 origin)
@@ -41,15 +252,15 @@ namespace BurstNav.Samples.StressTest
 
             try
             {
+                FillMask(blocked, xCount, yCount, ObstacleSeed);
+
                 for (var y = 0; y < yCount; y++)
                 {
                     for (var x = 0; x < xCount; x++)
                     {
                         var cell = y * xCount + x;
-                        var isBlocked = IsBlocked(x, y, xCount, yCount);
-                        blocked[cell] = (byte)math.select(0, 1, isBlocked);
-                        indexOf[cell] = math.select(-1, polygonCount, !isBlocked);
-                        polygonCount += math.select(0, 1, !isBlocked);
+                        indexOf[cell] = math.select(-1, polygonCount, blocked[cell] == 0);
+                        polygonCount += math.select(0, 1, blocked[cell] == 0);
                     }
                 }
 

@@ -2,31 +2,34 @@
 
 ## What it shows
 
-Ten thousand agents cross a 160 x 48 metre open field with scattered obstacle
-blocks and then walk back. The sample exercises the Free pipeline at scale: one
-baked blob graph, one flat A* search per request, kinematic funnel steering for
-every agent, and rendering through Entities Graphics with no GameObject per
-agent.
+Ten thousand agents cross a 160 x 48 metre open field with scattered obstacles
+and then walk back. The sample exercises the Free pipeline at scale: one baked
+blob graph, one flat A* search per request, kinematic funnel steering for every
+agent, and rendering through Entities Graphics with no GameObject per agent.
 
 The level is authored in a SubScene:
 
 | Object | Authoring | What it bakes |
 | --- | --- | --- |
-| `Walls` | `BnStressFieldAuthoring` plus a `MeshFilter` and `MeshRenderer` | The `BnBlobMeshGraph` singleton and one static render entity for the obstacle quads. |
+| `Field Graph` | `BnStressFieldAuthoring` | The `BnBlobMeshGraph` singleton with the obstacle mask. |
+| `Walls` | Quad with `MeshFilter` and `MeshRenderer` | One static render entity for the obstacle quads. |
 | `Floor` | Quad with `MeshRenderer` | One static render entity. |
 | `Spawner` | `BnStressSpawnAuthoring` | The `BnStressSpawnConfig` singleton with the agent prefab reference, the agent count and the spawn rate. |
 | `AgentPrefab` (prefab asset) | `BnAgentAuthoring`, `BnStressAgentAuthoring`, `MeshFilter`, `MeshRenderer` | The dominant agent archetype plus `BnStressRoute` and Entities Graphics render components. |
 
-`BnStressField` places 3 x 2 obstacle blocks on a staggered 7 x 5 lattice, so
-every corridor is at least two cells wide and the field stays connected while
-looking irregular. The first and last six columns stay clear: they are the spawn
-and goal bands.
+`BnStressField` scatters 2 x 1 to 3 x 2 cell obstacles over the whole field at
+about 16 percent density: 311 blocked cells, 1609 free polygons and 5524
+directed links. Obstacles reach the field edges, so no free highway runs along a
+border, and any straight free run longer than 10 cells is split by one more
+block. The generator flood-fills from the spawn band after every placement, so
+the field always keeps a route from the western band to the eastern band while
+leaving many alternative routes.
 
 `BnStressSpawnSystem` instantiates the prefab in batches of `SpawnPerFrame`
 behind the pathfinding system, gives each agent a random point inside a free
 spawn cell, a random goal point in the far band and an individual speed between
-3 and 6 m/s. Because agents start at different points and travel at different
-speeds, the crowd spreads over the field instead of forming a single file line.
+3 and 6 m/s. Agents therefore spread over several routes instead of following
+one line.
 
 On arrival `BnStressGoalSystem` swaps `BnStressRoute.Home` and
 `BnStressRoute.Goal` and re-arms the search request, so the crowd returns the
@@ -58,14 +61,14 @@ into `LocalTransform` so Entities Graphics draws the current position.
 | `AgentPrefab` | `Art/StressAgent.prefab` | Prefab every agent is instantiated from. |
 | `AgentCount` | 10000 | Total agents spawned. |
 | `SpawnPerFrame` | 64 | Agents instantiated per frame; also the number of A* searches per frame while the crowd fills. |
-| `CellsX`, `CellsY`, `CellSize` | 80, 24, 2 | Field size; the obstacle lattice follows the same rule as `BnStressField`. |
+| `CellsX`, `CellsY`, `CellSize` | 80, 24, 2 | Field size; the obstacle rule follows the same values through `BnStressField`. |
 
 `BnAgentAuthoring` on the prefab sets the base speed and radius; the spawn
 system overrides the speed with a random 3 to 6 m/s per agent.
 
 ## Expected load
 
-- Graph: 80 x 24 cells with 288 blocked cells, 1632 free polygons and 5832
+- Graph: 80 x 24 cells with 311 blocked cells, 1609 free polygons and 5524
   directed links.
 - Pathfinding: one single-threaded A* per pending agent, throttled to the spawn
   batch and the arrival retry budget.
@@ -73,8 +76,9 @@ system overrides the speed with a random 3 to 6 m/s per agent.
 - Rendering: Entities Graphics instanced quads, one entity per agent and no
   GameObject per agent.
 
-Measured in Unity 6000.5.2f1 with URP: 10000 agents, 130-160 fps in the Play
-mode game view (about 6.5 ms per frame), zero failed paths.
+Measured in Unity 6000.5.2f1 with URP and Entities Graphics 6.5.0: 10000
+agents, 150-165 fps in the Play mode game view (about 6 ms per frame), zero
+failed paths.
 
 ## Free API used
 
